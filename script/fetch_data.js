@@ -4,17 +4,36 @@ if (process.argv.length === 2) {
     console.error('Expected at least one argument'); 
     process.exit(1); 
 } 
-
+const fs = require('fs');
 const cliProgress = require('cli-progress');
 const {connect,disconnect, getZipOnDate, getZip, unzip,unzipData,readAndInsert,readAndInsertData} = require('./utility.js');
 const modes = ['-f','-y'];
 const mode = process.argv[2];
+const archiveDirectoryPath = "../data_files/archives"
+const extractDirectoryPath = "../data_files/extract"
 
+if (!fs.existsSync(archiveDirectoryPath)) {
+    fs.mkdirSync(archiveDirectoryPath, { recursive: true });
+    console.log(`Directory '${archiveDirectoryPath}' created.`);
+} 
+else {
+    console.log(`Directory '${archiveDirectoryPath}' already exists.`);
+}
+if (!fs.existsSync(extractDirectoryPath)) {
+    fs.mkdirSync(extractDirectoryPath, { recursive: true });
+    console.log(`Directory '${extractDirectoryPath}' created.`);
+} 
+else {
+    console.log(`Directory '${archiveDirectoryPath}' already exists.`);
+}
 
 const bar1 = new cliProgress.SingleBar({
     format: 'script running please wait... [{bar}] {percentage}% | ETA: {eta}s'
 }, cliProgress.Presets.legacy);
     
+
+
+
 
 if(modes.indexOf(mode)===-1) {
     console.error('Invalid argument');

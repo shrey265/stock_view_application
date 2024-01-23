@@ -41,7 +41,7 @@ const getZipOnDate = (date) => new Promise(
             const monthDigit = month<10 ? '0' : '';
             const dayDigit = day<10 ? '0' : '';
             const file_link = 'https://www.bseindia.com/download/BhavCopy/Equity/EQ'+dayDigit+day.toString()+monthDigit+month.toString()+year.toString().substring(2)+'_CSV.ZIP';
-                
+            
                 
             const request = https.get(file_link, function(response) {
                 if(response.statusCode===200){
