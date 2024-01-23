@@ -49,7 +49,7 @@ app.get('/stock/:name',(req,res)=>{
     const date = new Date();
     date.setDate(date.getDate()-1);
     const {name} = req.params;
-    console.log(name.substring(1));
+    
     Stock.find({ name: { $eq: name.substring(1) } })
                         .select('-_id code name open low high close date')
                         .sort({date:-1})
@@ -70,7 +70,7 @@ app.get('/stock_history/:name',(req,res)=>{
     const date = new Date();
     date.setDate(date.getDate()-1);
     const {name} = req.params;
-    console.log(name.substring(1));
+
     Stock.find({ name: { $eq: name.substring(1) } })
                         .select('-_id code name open low high close date')
                         .sort({date:-1})
@@ -102,7 +102,6 @@ app.post('/register',async (req,res)=>{
         });
         
     } catch(e){
-        console.log(e);
         res.status(400).json(e);
     }
     
@@ -158,8 +157,7 @@ app.post('/add_favourites:username',async(req,res)=>{
     const {token} = req.cookies;
     const {username} = req.params;
     const {favourites} = req.body;
-    console.log(typeof(favourites));
-    console.log(favourites);
+    
     if(token){
         jwt.verify(token, secret,{},async (err, info)=>{
             if(err) {
@@ -167,12 +165,13 @@ app.post('/add_favourites:username',async(req,res)=>{
                 throw err;
             }
             else{
-                const userFavourite = await User.find({ username: { $eq: username.substring(1) } })
+                const doc = await User.find({ username: { $eq: username.substring(1) } })
                 .select('-_id favourite');
-                console.log(userFavourite);
-                userFavourite[0].favourite.map((name)=>{
+
+                doc[0].favourite.map((name)=>{
                     if(!favourites.includes(name)) favourites.push(name);
                 });
+
                 User.updateOne({username: username.substring(1)},
                 {$set : {favourite : favourites}},
                 (err,result)=>{
@@ -185,21 +184,26 @@ app.post('/add_favourites:username',async(req,res)=>{
 });
 
 
-app.delete('/delete_favourite:username stock_name',async (req,res)=>{
-    const {username,stock_name} = req.params;
-    console.log(stock_name);
+app.delete('/delete_favourite',async (req,res)=>{
+    const username = req.query.username;
+    const stock_name = req.query.stock;
     const {token} = req.cookies;
-    // if(token){
-    //     const favourites = await User.find({username: {$eq : username.substring(1)}})
-    //             .select('-_id favourite');
-    //     const index = favourites.indexOf();
-    //     if (index > -1) { // only splice array when item is found
-    //         array.splice(index, 1); // 2nd parameter means remove one item only
-    //     }
-    // }
+
+    if(token){
+        const doc = await User.find({username: {$eq : username}})
+                .select('-_id favourite');
+        const index = doc[0].favourite.indexOf(stock_name);
+        if (index > -1) { 
+            doc[0].favourite.splice(index, 1); 
+        }
+        User.updateOne({username: username},
+                {$set : {favourite : doc[0].favourite}},
+                (err,result)=>{
+                    if(err) res.status(500);
+                    else res.status(200).json("favourites updated");
+                });
+    }
 })
-
-
 
 
 
