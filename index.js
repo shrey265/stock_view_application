@@ -70,7 +70,7 @@ app.get('/stock_history',(req,res)=>{
     const date = new Date();
     date.setDate(date.getDate()-1);
     const name = decodeURIComponent(req.query.name);
-    
+    console.log(name);
     Stock.find({ name: { $eq: name } })
                         .select('-_id code name open low high close date')
                         .sort({date:-1})
@@ -220,9 +220,9 @@ app.get('/',(req,res)=>{
         <p>top 10 stocks</p>
         <a href="/top_10_stocks">https://stock-view-application.vercel.app/top_10_stocks</a>
         <p>find stocks by name      *give name of the stock as parameter in the link</p>
-        <a href="/stock?name=ULTRATECH+CM">https://stock-view-application.vercel.app/stock?name=ULTRATECH+CM</a>
+        <a href="/stock?name=ULTRATECH CM">https://stock-view-application.vercel.app/stock?name=ULTRATECH CM</a>
         <p>stock price history</p>
-        <a href="/stock_history?name=ABB+LTD.">https://stock-view-application.vercel.app/stock_history?name=ABB+LTD.</a>    
+        <a href="/stock_history?name=BHANSALI ENG">https://stock-view-application.vercel.app/stock_history?name=BHANSALI ENG</a>    
     
     </body>
     </html>
