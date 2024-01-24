@@ -216,8 +216,13 @@ app.get('/',(req,res)=>{
     <body>
     
         <p>This page contain endpoints for Stock View API</p>
-        <p>Routes</p>
-        <a href="/top_10_stocks">https:stock-view-application.vercel.app/top_10_stocks</a>
+        <h4>Routes</h4>
+        <p>top 10 stocks</p>
+        <a href="/top_10_stocks">https://stock-view-application.vercel.app/top_10_stocks</a>
+        <p>find stocks by name      *give name of the stock as parameter in the link</p>
+        <a href="/stock:ULTRATECH CM">https://stock-view-application.vercel.app/stock:ULTRATECH CM</a>
+        <p>stock price history</p>
+        <a href="/stock_history/:ABB LTD.">https://stock-view-application.vercel.app/stock_history/:ABB LTD.</a>    
     
     </body>
     </html>
