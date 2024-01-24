@@ -27,16 +27,24 @@
             <p>*This form data will go to the link https://stock-view-application.vercel.app/add_favourites?username={username}</p>
         </form>
 
-        <p>Delete a stock from favourites  =====>&nbsp;&nbsp;&nbsp;<a onclick=deleteFav() style="color: blue; text-decoration: underline;cursor: pointer;">/delete_favourite?username={username}&stock=HDFC</a></p>
+        <p>Delete a stock from favourites</p>
+        <form id="DeleteFavouriteForm">
+            <label for="stock">Enter a stock name:</label>
+            <input type="text" id="stock" name="delete this stock" required>
+            <button type="button" onclick=deleteFav()>Delete</button>
+            <p>*This button will send a DELETE request to  <a style="color: blue;">/delete_favourite?username={username}&stock=HDFC</a></p>
+        </form>
         <script>
 
             function deleteFav(){
+                var stock = document.getElementById("stock").value;
                 var xhr = new XMLHttpRequest();
-                xhr.open('DELETE','/delete_favourite?username={username}&stock=HDFC',true);
+                xhr.open('DELETE','/delete_favourite?username={username}&stock='+stock,true);
                 xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         alert('DELETE request successful');
+                        window.location.href="/";
                     } else {
                         alert('DELETE request failed with status:', xhr.status);
                     }
