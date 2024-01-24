@@ -48,9 +48,9 @@ app.get('/top_10_stocks',(req,res)=>{
 app.get('/stock',(req,res)=>{
     const date = new Date();
     date.setDate(date.getDate()-1);
-    const name = req.query.name;
-    
-    Stock.find({ name: { $eq: name.substring(1) } })
+    const name = decodeURIComponent(req.query.name);
+
+    Stock.find({ name: { $eq: name } })
                         .select('-_id code name open low high close date')
                         .sort({date:-1})
                         .limit(1)
@@ -69,9 +69,9 @@ app.get('/stock',(req,res)=>{
 app.get('/stock_history',(req,res)=>{
     const date = new Date();
     date.setDate(date.getDate()-1);
-    const name = req.query.name;
-
-    Stock.find({ name: { $eq: name.substring(1) } })
+    const name = decodeURIComponent(req.query.name);
+    
+    Stock.find({ name: { $eq: name } })
                         .select('-_id code name open low high close date')
                         .sort({date:-1})
                         .exec((err, results) => {
@@ -128,7 +128,7 @@ app.post('/login',async (req,res)=>{
 
 app.get('/favourites',async(req,res)=>{
     const {token} = req.cookies;
-    const username = req.query.username;
+    const username = decodeURIComponent(req.query.username);
     
     if(token){
         jwt.verify(token, secret,{},(err, info)=>{
@@ -137,7 +137,7 @@ app.get('/favourites',async(req,res)=>{
                 throw err;
             }
             else{
-                const favourites = User.find({ username: { $eq: username.substring(1) } })
+                const favourites = User.find({ username: { $eq: username } })
                 .select('-_id favourite')
                 .exec((err, results) => {
                     if (err) {
@@ -155,7 +155,7 @@ app.get('/favourites',async(req,res)=>{
 
 app.post('/add_favourites',async(req,res)=>{
     const {token} = req.cookies;
-    const username = req.query.username;
+    const username = decodeURIComponent(req.query.username);
     const {favourites} = req.body;
     
     if(token){
@@ -165,7 +165,7 @@ app.post('/add_favourites',async(req,res)=>{
                 throw err;
             }
             else{
-                const doc = await User.find({ username: { $eq: username.substring(1) } })
+                const doc = await User.find({ username: { $eq: username } })
                 .select('-_id favourite');
 
                 doc[0].favourite.map((name)=>{
@@ -185,8 +185,8 @@ app.post('/add_favourites',async(req,res)=>{
 
 
 app.delete('/delete_favourite',async (req,res)=>{
-    const username = req.query.username;
-    const stock_name = req.query.stock;
+    const username = decodeURIComponent(req.query.username);
+    const stock_name = decodeURIComponent(req.query.stock);
     const {token} = req.cookies;
 
     if(token){
