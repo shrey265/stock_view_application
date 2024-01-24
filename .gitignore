@@ -2,3 +2,4 @@
 node_modules
 data_files/archives/*
 data_files/extract/*
+vercel.json

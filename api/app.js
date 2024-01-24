@@ -205,6 +205,24 @@ app.delete('/delete_favourite',async (req,res)=>{
     }
 })
 
+app.get('/',(req,res)=>{
+    res.status(200).json("Stock View API");
+})
+
+// app.delete('/delete_stock',async (req,res)=>{
+//     // const username = req.query.username;
+//     // const stock_name = req.query.stock;
+//     const date = req.query.date;
+//     const {token} = req.cookies;
+//     console.log(date);
+//     if(token){
+//         Stock.deleteMany({date:{$regex: new RegExp(date, 'i')}},(err)=>{
+//             if(err) res.status(400);
+//             else res.status(200).json("stocks deleted");
+//         })
+//     }
+// });
+
 
 
 app.listen(process.env.PORT);
