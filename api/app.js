@@ -206,7 +206,20 @@ app.delete('/delete_favourite',async (req,res)=>{
 })
 
 app.get('/',(req,res)=>{
-    res.status(200).json("Stock View API");
+    res.status(200).send(`<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Stock View API</title>
+    </head>
+    <body>
+    
+        <h1>Hello, World!</h1>
+    
+    </body>
+    </html>
+    `);
 })
 
 // app.delete('/delete_stock',async (req,res)=>{
