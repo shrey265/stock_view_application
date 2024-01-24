@@ -50,6 +50,7 @@
     xhr.onload = function () {
         if (xhr.status == 200) {
             alert('User created!');
+            window.location.href = "/";
         } else {
             alert('Registration failed.');
         }
