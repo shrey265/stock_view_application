@@ -45,10 +45,10 @@ app.get('/top_10_stocks',(req,res)=>{
 }) ;
 
 
-app.get('/stock/:name',(req,res)=>{
+app.get('/stock',(req,res)=>{
     const date = new Date();
     date.setDate(date.getDate()-1);
-    const {name} = req.params;
+    const name = req.query.name;
     
     Stock.find({ name: { $eq: name.substring(1) } })
                         .select('-_id code name open low high close date')
@@ -66,10 +66,10 @@ app.get('/stock/:name',(req,res)=>{
 
 
 
-app.get('/stock_history/:name',(req,res)=>{
+app.get('/stock_history',(req,res)=>{
     const date = new Date();
     date.setDate(date.getDate()-1);
-    const {name} = req.params;
+    const name = req.query.name;
 
     Stock.find({ name: { $eq: name.substring(1) } })
                         .select('-_id code name open low high close date')
@@ -126,9 +126,9 @@ app.post('/login',async (req,res)=>{
     }
 });
 
-app.get('/favourites:username',async(req,res)=>{
+app.get('/favourites',async(req,res)=>{
     const {token} = req.cookies;
-    const {username} = req.params;
+    const username = req.query.username;
     
     if(token){
         jwt.verify(token, secret,{},(err, info)=>{
@@ -153,9 +153,9 @@ app.get('/favourites:username',async(req,res)=>{
 });
 
 
-app.post('/add_favourites:username',async(req,res)=>{
+app.post('/add_favourites',async(req,res)=>{
     const {token} = req.cookies;
-    const {username} = req.params;
+    const username = req.query.username;
     const {favourites} = req.body;
     
     if(token){
@@ -220,9 +220,9 @@ app.get('/',(req,res)=>{
         <p>top 10 stocks</p>
         <a href="/top_10_stocks">https://stock-view-application.vercel.app/top_10_stocks</a>
         <p>find stocks by name      *give name of the stock as parameter in the link</p>
-        <a href="/stock:ULTRATECH CM">https://stock-view-application.vercel.app/stock:ULTRATECH CM</a>
+        <a href="/stock?name=ULTRATECH CM">https://stock-view-application.vercel.app/stock?name=ULTRATECH CM</a>
         <p>stock price history</p>
-        <a href="/stock_history/:ABB LTD.">https://stock-view-application.vercel.app/stock_history/:ABB LTD.</a>    
+        <a href="/stock_history?name=ABB LTD.">https://stock-view-application.vercel.app/stock_history?name=ABB LTD.</a>    
     
     </body>
     </html>
