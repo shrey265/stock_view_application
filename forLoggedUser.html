@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Stock View API</title>
+    </head>
+    <body>
+    
+        <p>This page contain endpoints for Stock View Application</p>
+        <h4>Routes</h4>
+        <p>Top 10 stocks    =====>&nbsp;&nbsp;&nbsp; <a href="/top_10_stocks">/top_10_stocks</a></p>
+        
+        <p>Find stocks by name  =====>&nbsp;&nbsp;&nbsp;<a href="/stock?name=ULTRATECH CM">/stock?name=ULTRATECH CM</a>&nbsp;&nbsp;&nbsp; *change the name of stock in the link to fetch its data</p>
+        
+        <p>Stock price history  =====>&nbsp;&nbsp;&nbsp;<a href="/stock_history?name=BHANSALI ENG">/stock_history?name=BHANSALI ENG</a>    </p>
+        
+        <p>Fetch favourite stocks  =====>&nbsp;&nbsp;&nbsp;<a href="/favourites?username={username}">/favourites?username={username}</a></p>
+        
+      
+        <p>Add a stock to favourite</p>
+        
+        <form id="addFavouriteForm">
+            <label for="stocks">Enter one/more stocks:</label>
+            <input type="text" id="stocks" name="favourite stocks" required>
+            <button type="button" onclick=AddFavourite()>Add Favourite</button>
+            <p>*This form data will go to the link https://stock-view-application.vercel.app/add_favourites?username={username}</p>
+        </form>
+
+        <p>Delete a stock from favourites  =====>&nbsp;&nbsp;&nbsp;<a onclick=deleteFav() style="color: blue; text-decoration: underline;cursor: pointer;">/delete_favourite?username={username}&stock=HDFC</a></p>
+        <script>
+
+            function deleteFav(){
+                var xhr = new XMLHttpRequest();
+                xhr.open('DELETE','/delete_favourite?username={username}&stock=HDFC',true);
+                xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        alert('DELETE request successful');
+                    } else {
+                        alert('DELETE request failed with status:', xhr.status);
+                    }
+                }
+            }
+                xhr.send();
+            }
+
+            function AddFavourite() {
+                var username = document.getElementById('stocks').value;
+                var favourites = username.split(',');
+
+                var data = {
+                    favourites: favourites,
+                };
+
+                var jsonData = JSON.stringify(data);
+
+                var xhr = new XMLHttpRequest();
+
+                xhr.open('POST', '/add_favourites?username={username}', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                xhr.send(jsonData);
+
+                xhr.onload = function () {
+                    if (xhr.status == 200) {
+                        alert('Updated Successfully!');
+                        window.location.href = "/";
+                    } else {
+                        alert('Updation failed.');
+                    }
+                };
+    }
+        </script>
+    </body>
+    </html>

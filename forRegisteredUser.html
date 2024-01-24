@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Stock View API</title>
+    </head>
+    <body>
+        <h4>Login here</h4>
+        <p></p>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+    
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+    
+            <button type="button" onclick=submitForm()>Login</button>
+        </form>
+
+
+        <script>
+            function submitForm() {
+
+    var username = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
+
+    var data = {
+        username: username,
+        password: password
+    };
+
+    var jsonData = JSON.stringify(data);
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('POST', '/login', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    xhr.send(jsonData);
+
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            window.location.href = "/";
+        } else {
+            alert('Login failed.');
+        }
+    };
+}
+
+        </script>
+    </body>
+    </html>

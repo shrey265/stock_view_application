@@ -1,5 +1,6 @@
 require('dotenv').config({ path: "./.env" });
 const mongoose = require('mongoose');
+const fs = require('fs');
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -10,6 +11,25 @@ const Stock = require('./data_models/stock_data')
 const User = require('./data_models/user');
 const salt = bcrypt.genSaltSync(10);
 const secret = process.env.SECRET;
+const indexPage = "./index.html";
+const registeredUserPage = "./forRegisteredUser.html";
+const loggedUserPage = "./forLoggedUser.html";
+var index;
+var registered;
+var logged;
+try {
+    index = fs.readFileSync(indexPage, 'utf8');
+    registered = fs.readFileSync(registeredUserPage, 'utf8');
+    logged = fs.readFileSync(loggedUserPage, 'utf8');
+
+} catch (err) {
+    console.error('Error reading the file:', err);
+}
+
+
+
+
+
 app.use(cors({
     credentials:true,
     origin:process.env.CORS_ORIGIN,
@@ -70,9 +90,9 @@ app.get('/stock_history',(req,res)=>{
     const date = new Date();
     date.setDate(date.getDate()-1);
     const name = decodeURIComponent(req.query.name);
-    console.log(name);
+
     Stock.find({ name: { $eq: name } })
-                        .select('-_id code name open low high close date')
+                        .select('-_id name open low high close date')
                         .sort({date:-1})
                         .exec((err, results) => {
                             if (err) {
@@ -92,11 +112,12 @@ app.post('/register',async (req,res)=>{
         const userDoc =  await User.create({username,
              password:bcrypt.hashSync(password,salt),
              favourite: [],
+             token: "token",
         });
-        jwt.sign({username,id:userDoc.id},secret,{},(err,token)=>{
+        jwt.sign({username,id:userDoc.id},secret,{},async (err,token)=>{
             if(err) throw err;
-            res.cookie('token',token,{ sameSite: 'none', secure: false, httpOnly: true}).json({ 
-                userDoc,
+            await User.updateOne({username:{$eq: username}},{token: token});
+            res.cookie('token',token,{ sameSite: 'none', secure: true, httpOnly: true}).json({ 
                 logged_in:true,
             },);
         });
@@ -111,15 +132,14 @@ app.post('/login',async (req,res)=>{
     const {username,password} = req.body;
     const userDoc = await User.findOne({username});
     const passok = bcrypt.compareSync(password,userDoc.password);
-    if(passok){
-        jwt.sign({username,id:userDoc.id},secret,{},(err,token)=>{
-            if(err) throw err;
-            res.cookie('token',token,{ sameSite: 'none', secure: false, httpOnly: true}).json({ 
-                id:userDoc._id,
-                username,
-                logged_in:true,
-            },);
-        });
+    if(passok){ 
+        const userDoc = await User.findOne({username:{$eq: username}});
+        const token = userDoc.token;
+        res.cookie('token',token,{ sameSite: 'none', secure: true, httpOnly: true}).json({ 
+            id:userDoc._id,
+            username,
+            logged_in:true,
+        },);
     }
     else{
         res.status(400).json('wrong credentials');
@@ -172,7 +192,7 @@ app.post('/add_favourites',async(req,res)=>{
                     if(!favourites.includes(name)) favourites.push(name);
                 });
 
-                User.updateOne({username: username.substring(1)},
+                User.updateOne({username: username},
                 {$set : {favourite : favourites}},
                 (err,result)=>{
                     if(err) res.status(500);
@@ -188,7 +208,7 @@ app.delete('/delete_favourite',async (req,res)=>{
     const username = decodeURIComponent(req.query.username);
     const stock_name = decodeURIComponent(req.query.stock);
     const {token} = req.cookies;
-
+   
     if(token){
         const doc = await User.find({username: {$eq : username}})
                 .select('-_id favourite');
@@ -205,28 +225,21 @@ app.delete('/delete_favourite',async (req,res)=>{
     }
 })
 
-app.get('/',(req,res)=>{
-    res.status(200).send(`<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Stock View API</title>
-    </head>
-    <body>
+app.get('/',async (req,res)=>{
+    const {token} = req.cookies;
     
-        <p>This page contain endpoints for Stock View API</p>
-        <h4>Routes</h4>
-        <p>top 10 stocks</p>
-        <a href="/top_10_stocks">https://stock-view-application.vercel.app/top_10_stocks</a>
-        <p>find stocks by name      *give name of the stock as parameter in the link</p>
-        <a href="/stock?name=ULTRATECH CM">https://stock-view-application.vercel.app/stock?name=ULTRATECH CM</a>
-        <p>stock price history</p>
-        <a href="/stock_history?name=BHANSALI ENG">https://stock-view-application.vercel.app/stock_history?name=BHANSALI ENG</a>    
-    
-    </body>
-    </html>
-    `);
+    if(token){
+    const userDoc = await User.findOne({token: {$eq: token}});
+    const username = userDoc.username;
+    const regex = new RegExp('\\{' + "username" + '\\}', 'g');
+    logged = logged.replace(regex,username);
+        res.status(200).send(logged)
+    }
+    else res.status(200).send(index);
+})
+
+app.get('/login_page',(req,res)=>{
+    res.status(200).send(registered);
 })
 
 // app.delete('/delete_stock',async (req,res)=>{

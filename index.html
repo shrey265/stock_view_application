@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Stock View API</title>
+    </head>
+    <body>
+    
+        <p>This page contain endpoints for Stock View Application</p>
+        <h4>Routes</h4>
+        <p>Top 10 stocks    =====>&nbsp;&nbsp;&nbsp; <a href="/top_10_stocks">/top_10_stocks</a></p>
+        
+        <p>Find stocks by name  =====>&nbsp;&nbsp;&nbsp;<a href="/stock?name=ULTRATECH CM">/stock?name=ULTRATECH CM</a>&nbsp;&nbsp;&nbsp; *change the name of stock in the link to fetch its data</p>
+        
+        <p>Stock price history  =====>&nbsp;&nbsp;&nbsp;<a href="/stock_history?name=BHANSALI ENG">/stock_history?name=BHANSALI ENG</a>    </p>   
+        <h4>To add/modify favourite stocks</h4>
+        <p>First register as a user.  If already registered before => <a href="./login_page">Login</a></p>
+        <form id="registerForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+    
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+    
+            <button type="button" onclick=submitForm()>Register</button>
+        </form>
+
+
+        <script>
+            function submitForm() {
+
+    var username = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
+
+    var data = {
+        username: username,
+        password: password
+    };
+
+    var jsonData = JSON.stringify(data);
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('POST', '/register', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    xhr.send(jsonData);
+
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            alert('User created!');
+        } else {
+            alert('Registration failed.');
+        }
+    };
+}
+
+        </script>
+    </body>
+    </html>
