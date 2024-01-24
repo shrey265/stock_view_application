@@ -1,4 +1,4 @@
-require('dotenv').config({ path: "../.env" });
+require('dotenv').config({ path: "./.env" });
 const mongoose = require('mongoose');
 const express = require('express');
 const app = express();
@@ -6,8 +6,8 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
-const Stock = require('../data_models/stock_data')
-const User = require('../data_models/user');
+const Stock = require('./data_models/stock_data')
+const User = require('./data_models/user');
 const salt = bcrypt.genSaltSync(10);
 const secret = process.env.SECRET;
 app.use(cors({
@@ -17,7 +17,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
-console.log("app is running");
+
 mongoose.set('strictQuery',false);
 mongoose.connect(
     process.env.MONGODB_CREDENTIALS,
