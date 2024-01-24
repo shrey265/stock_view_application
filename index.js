@@ -227,7 +227,7 @@ app.delete('/delete_favourite',async (req,res)=>{
 
 app.get('/',async (req,res)=>{
     const {token} = req.cookies;
-    
+    console.log(token);
     if(token){
     const userDoc = await User.findOne({token: {$eq: token}});
     const username = userDoc.username;
