@@ -215,9 +215,9 @@ app.get('/',(req,res)=>{
     </head>
     <body>
     
-        <p>This link is an endpoint for Stock View API</p>
+        <p>This page contain endpoints for Stock View API</p>
         <p>Routes</p>
-        <a href="stock-view-application.vercel.app/top_10_stocks">https:stock-view-application.vercel.app/top_10_stocks</a>
+        <a href="/top_10_stocks">https:stock-view-application.vercel.app/top_10_stocks</a>
     
     </body>
     </html>
