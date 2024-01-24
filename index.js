@@ -220,9 +220,9 @@ app.get('/',(req,res)=>{
         <p>top 10 stocks</p>
         <a href="/top_10_stocks">https://stock-view-application.vercel.app/top_10_stocks</a>
         <p>find stocks by name      *give name of the stock as parameter in the link</p>
-        <a href="/stock?name=ULTRATECH CM">https://stock-view-application.vercel.app/stock?name=ULTRATECH CM</a>
+        <a href="/stock?name=ULTRATECH+CM">https://stock-view-application.vercel.app/stock?name=ULTRATECH+CM</a>
         <p>stock price history</p>
-        <a href="/stock_history?name=ABB LTD.">https://stock-view-application.vercel.app/stock_history?name=ABB LTD.</a>    
+        <a href="/stock_history?name=ABB+LTD.">https://stock-view-application.vercel.app/stock_history?name=ABB+LTD.</a>    
     
     </body>
     </html>
