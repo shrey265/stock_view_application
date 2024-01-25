@@ -11,6 +11,7 @@ Server is deployed at https://stock-view-application.vercel.app/
 3. Go to the project folder and install the dependencies `npm install`.
 4. Create a .env file in the project directory and add the following Environment Variables
 5. * `MONGODB_CREDENTIALS` Your credentials for a mongodb cluster.
+   * Example: mongodb+srv://<cluster_name>:<cluster_password>@cluster0.qq0j30u.mongodb.net/?retryWrites=true&w=majority
    * `PORT` On which you want to run the server.
    * `SECRET` A random string to sign jwt tokens.
    * `CORS_ORIGIN` URL of machine from which you are sending request to the server. If server is running on local machine
