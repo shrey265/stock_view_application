@@ -1,6 +1,12 @@
 # Stock View Application
 
 An application to access and manage data from the Bombay Stock Exchange (BSE).
+<br><br>
+**Features**
+* Script to fetch data from Bombay Stock Exchange (BSE) and uploading to MongoDB database
+* Express API with several routes to query data from the database
+* User Login/Register
+* Cache layer 
 
 Server is deployed at https://stock-view-application.vercel.app/
 <br>Or setup the server locally
