@@ -13,9 +13,9 @@ const Stock = require('../data_models/stock_data')
 const User = require('../data_models/user');
 const salt = bcrypt.genSaltSync(10);
 const secret = process.env.SECRET;
-const indexPage = process.cwd()+"/index.html";
-const registeredUserPage = process.cwd()+"/forRegisteredUser.html";
-const loggedUserPage = process.cwd()+"/forLoggedUser.html";
+const indexPage = process.cwd()+"/../index.html";
+const registeredUserPage = process.cwd()+"/../forRegisteredUser.html";
+const loggedUserPage = process.cwd()+"/../forLoggedUser.html";
 var index;
 var registered;
 var logged;
