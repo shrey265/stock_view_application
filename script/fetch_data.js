@@ -16,16 +16,12 @@ if (!fs.existsSync(archiveDirectoryPath)) {
     fs.mkdirSync(archiveDirectoryPath, { recursive: true });
     console.log(`Directory '${archiveDirectoryPath}' created.`);
 } 
-else {
-    console.log(`Directory '${archiveDirectoryPath}' already exists.`);
-}
+
 if (!fs.existsSync(extractDirectoryPath)) {
     fs.mkdirSync(extractDirectoryPath, { recursive: true });
     console.log(`Directory '${extractDirectoryPath}' created.`);
 } 
-else {
-    console.log(`Directory '${archiveDirectoryPath}' already exists.`);
-}
+
 
 const bar1 = new cliProgress.SingleBar({
     format: 'script running please wait... [{bar}] {percentage}% | ETA: {eta}s'
@@ -84,6 +80,6 @@ if(mode==='-f'){
     getAndUpload50DaysData();
 }
 else if(mode==='-y'){
-    getAndUploadData()
+    getAndUploadData();
 }
 

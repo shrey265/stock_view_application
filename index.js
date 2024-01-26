@@ -6,6 +6,7 @@ const app = express();
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cache = require('memory-cache');
 const cookieParser = require('cookie-parser');
 const Stock = require('./data_models/stock_data')
 const User = require('./data_models/user');
@@ -17,6 +18,8 @@ const loggedUserPage = process.cwd()+"/forLoggedUser.html";
 var index;
 var registered;
 var logged;
+
+
 try {
     index = fs.readFileSync(indexPage, 'utf8');
     registered = fs.readFileSync(registeredUserPage, 'utf8');
@@ -48,9 +51,14 @@ mongoose.connect(
 
 app.get('/top_10_stocks',(req,res)=>{
     const date = new Date();
+    const data = cache.get('top_stocks');
     date.setDate(date.getDate()-1);
 
-    Stock.find({ date: { $lt: date.toLocaleString() } })
+    if(data){
+        res.status(200).json(data);
+    }
+    else{
+        Stock.find({ date: { $lt: date.toLocaleString() } })
                         .sort({close : -1})
                         .limit(10)
                         .select('-_id code name open low high close date')
@@ -59,9 +67,12 @@ app.get('/top_10_stocks',(req,res)=>{
                                 res.status(500).json("Unable to fetch! Error!");
                                 console.error(err);
                             } else {
+                                cache.put('top_stocks',results,5*60*1000);
                                 res.status(200).json(results);
                             }
                         });
+    }
+    
 }) ;
 
 
@@ -69,8 +80,13 @@ app.get('/stock',(req,res)=>{
     const date = new Date();
     date.setDate(date.getDate()-1);
     const name = decodeURIComponent(req.query.name);
+    const data = cache.get(name);
 
-    Stock.find({ name: { $eq: name } })
+    if(data){
+        res.status(200).json(data);
+    }
+    else{
+        Stock.find({ name: { $eq: name } })
                         .select('-_id code name open low high close date')
                         .sort({date:-1})
                         .limit(1)
@@ -79,9 +95,11 @@ app.get('/stock',(req,res)=>{
                                 res.status(500).json("Unable to fetch! Error!");
                                 console.error(err);
                             } else {
+                                cache.put(name,results,5*60*1000);
                                 res.status(200).json(results);
                             }
                         });
+    }
 }) ;
 
 
@@ -90,8 +108,14 @@ app.get('/stock_history',(req,res)=>{
     const date = new Date();
     date.setDate(date.getDate()-1);
     const name = decodeURIComponent(req.query.name);
+    const data = cache.get(`history:${name}`);
+    
+    if(data){
+        res.status(200).json(data);
+    }
 
-    Stock.find({ name: { $eq: name } })
+    else{
+        Stock.find({ name: { $eq: name } })
                         .select('-_id name open low high close date')
                         .sort({date:-1})
                         .exec((err, results) => {
@@ -99,9 +123,12 @@ app.get('/stock_history',(req,res)=>{
                                 res.status(500).json("Unable to fetch! Error!");
                                 console.error(err);
                             } else {
+                                cache.put(`history:${name}`,results,5*60*1000);
                                 res.status(200).json(results);
                             }
                         });
+    }
+    
 }) ;
 
 
@@ -258,6 +285,8 @@ app.get('/login_page',(req,res)=>{
 
 
 
-app.listen(process.env.PORT);
-console.log(`listening on port ${process.env.PORT}`);
+app.listen(process.env.PORT,()=>{
+    console.log(`listening on port ${process.env.PORT}`);
+});
+
 module.exports = app;
