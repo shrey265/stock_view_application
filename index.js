@@ -1,4 +1,4 @@
-require('dotenv').config({ path: "../.env" });
+require('dotenv').config({ path: "./.env" });
 const mongoose = require('mongoose');
 const fs = require('fs');
 const express = require('express');
@@ -9,13 +9,13 @@ const jwt = require('jsonwebtoken');
 const cache = require('memory-cache');
 const { exec } = require('child_process');
 const cookieParser = require('cookie-parser');
-const Stock = require('../data_models/stock_data')
-const User = require('../data_models/user');
+const Stock = require('./data_models/stock_data')
+const User = require('./data_models/user');
 const salt = bcrypt.genSaltSync(10);
 const secret = process.env.SECRET;
-const indexPage = process.cwd()+"/../index.html";
-const registeredUserPage = process.cwd()+"/../forRegisteredUser.html";
-const loggedUserPage = process.cwd()+"/../forLoggedUser.html";
+const indexPage = process.cwd()+"/index.html";
+const registeredUserPage = process.cwd()+"/forRegisteredUser.html";
+const loggedUserPage = process.cwd()+"/forLoggedUser.html";
 var index;
 var registered;
 var logged;
@@ -273,7 +273,7 @@ app.get('/login_page',(req,res)=>{
 
 
 app.get('/refresh',(req,res)=>{
-    exec(`node ../script/fetch_data.js -f`,(err)=>{
+    exec(`node ./script/fetch_data.js -f`,(err)=>{
         if(err){
             res.status(500).json("refresh failed");
         }
