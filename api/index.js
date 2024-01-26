@@ -1,4 +1,4 @@
-require('dotenv').config({ path: "./.env" });
+require('dotenv').config({ path: "../.env" });
 const mongoose = require('mongoose');
 const fs = require('fs');
 const express = require('express');
@@ -7,9 +7,10 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cache = require('memory-cache');
+const { exec } = require('child_process');
 const cookieParser = require('cookie-parser');
-const Stock = require('./data_models/stock_data')
-const User = require('./data_models/user');
+const Stock = require('../data_models/stock_data')
+const User = require('../data_models/user');
 const salt = bcrypt.genSaltSync(10);
 const secret = process.env.SECRET;
 const indexPage = process.cwd()+"/index.html";
@@ -269,6 +270,16 @@ app.get('/login_page',(req,res)=>{
     res.status(200).send(registered);
 })
 
+
+
+app.get('/refresh',(req,res)=>{
+    exec(`node ../script/fetch_data.js -f`,(err)=>{
+        if(err){
+            res.status(500).json("refresh failed");
+        }
+        else res.status(200).json("successfully refreshed last 50 days data");
+    })
+})
 // app.delete('/delete_stock',async (req,res)=>{
 //     // const username = req.query.username;
 //     // const stock_name = req.query.stock;
