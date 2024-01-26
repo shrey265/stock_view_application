@@ -7,7 +7,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cache = require('memory-cache');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 const cookieParser = require('cookie-parser');
 const Stock = require('./data_models/stock_data')
 const User = require('./data_models/user');
@@ -273,11 +273,14 @@ app.get('/login_page',(req,res)=>{
 
 
 app.get('/refresh',(req,res)=>{
-    exec(`node ./script/fetch_data.js -f`,(err)=>{
-        if(err){
-            res.status(500).json("refresh failed");
-        }
-        else res.status(200).json("successfully refreshed last 50 days data");
+    const args = ['-f'];
+    const child = spawn('node',['fetch_data.js', ...args],{cwd: `${process.cwd()}/script`});
+    child.on('error',(err)=>{
+        console.log(err);
+        res.status(500).json("refresh failed");
+    })
+    child.on('close',()=>{
+        res.status(200).json("successfully refreshed 50 days data");
     })
 })
 // app.delete('/delete_stock',async (req,res)=>{
