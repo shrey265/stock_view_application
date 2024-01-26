@@ -50,4 +50,7 @@ Server is deployed at https://stock-view-application.vercel.app/
   "favourites": ["HDFC","MAHINDRA", "ULTRATECH CM", "SBI", "AMERICAN EXPRESS"]
   }
 * Delete a stock from favourites by a `DELETE` request on url `/delete_favourite?username=shrey&stock=HDFC` change the name of the stock in url to delete that stock.
+* `/refresh` to refresh the stock data for last 50 days.
+* This will create a child process which will run the script `node fetch_data.js -f`.
+* Refresh feature is not working at this deployment https://stock-view-application.vercel.app/ because the app is hosted as a serverless function thus creating a child process is a headache.
  
