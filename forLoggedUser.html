@@ -9,8 +9,9 @@
     
         <p>This page contain endpoints for Stock View Application</p>
         <h4>Routes</h4>
+        <p>Get names of all stocks    =====>&nbsp;&nbsp;&nbsp; <a href="/all_stocks">/all_stocks</a></p>
+
         <p>Top 10 stocks    =====>&nbsp;&nbsp;&nbsp; <a href="/top_10_stocks">/top_10_stocks</a></p>
-        
         <p>Find stocks by name  =====>&nbsp;&nbsp;&nbsp;<a href="/stock?name=ULTRATECH CM">/stock?name=ULTRATECH CM</a>&nbsp;&nbsp;&nbsp; *change the name of stock in the link to fetch its data</p>
         
         <p>Stock price history  =====>&nbsp;&nbsp;&nbsp;<a href="/stock_history?name=BHANSALI ENG">/stock_history?name=BHANSALI ENG</a>    </p>
@@ -22,7 +23,7 @@
         <p>Add a stock to favourite</p>
         
         <form id="addFavouriteForm">
-            <label for="stocks">Enter one/more stocks:</label>
+            <label for="stocks">Enter one/more stocks (put ',' in between):</label>
             <input type="text" id="stocks" name="favourite stocks" required>
             <button type="button" onclick=AddFavourite()>Add Favourite</button>
             <p>*This form data will go to the link https://stock-view-application.vercel.app/add_favourites?username={username}</p>
@@ -76,7 +77,7 @@
                         alert('Updated Successfully!');
                         window.location.href = "/";
                     } else {
-                        alert('Updation failed.');
+                        alert(`Updation failed. ${xhr.responseText}`);
                     }
                 };
     }

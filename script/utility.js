@@ -126,7 +126,9 @@ async (resolve) => {
         .pipe(parse({ 
         delimiter: ",",
         columns: true,
-        ltrim: true, }))
+        ltrim: true,
+        rtrim: true
+     }))
             .on("data", function (row) {
                 stocks.push({
                 code: row.SC_CODE,

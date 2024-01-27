@@ -50,6 +50,23 @@ mongoose.connect(
     }
   );
 
+
+app.get('/all_stocks',(req,res)=>{
+    const data = cache.get('all_stocks');
+    if(data){
+        res.status(200).json(data);
+    }
+    else{
+        Stock.distinct('name',(err,names)=>{
+            if(err) res.status(500).json("unable to fetch! try later.");
+            else res.status(200).json(names);
+        });
+    }
+});
+
+
+
+
 app.get('/top_10_stocks',(req,res)=>{
     const date = new Date();
     const data = cache.get('top_stocks');
@@ -135,42 +152,46 @@ app.get('/stock_history',(req,res)=>{
 
 app.post('/register',async (req,res)=>{
     const {username, password} = req.body;
-    
-    try{
-        const userDoc =  await User.create({username,
-             password:bcrypt.hashSync(password,salt),
-             favourite: [],
-             token: "token",
-        });
-        jwt.sign({username,id:userDoc.id},secret,{},async (err,token)=>{
-            if(err) throw err;
-            await User.updateOne({username:{$eq: username}},{token: token});
-            res.cookie('token',token,{ sameSite: 'none', secure: true, httpOnly: true}).json({ 
-                logged_in:true,
-            },);
-        });
-        
-    } catch(e){
-        res.status(400).json(e);
+    if(!username || !password) res.status(400).json("username and password cannot be empty!");
+    else{
+        try{
+            const userDoc =  await User.create({username,
+                 password:bcrypt.hashSync(password,salt),
+                 favourite: [],
+                 token: "token",
+            });
+            jwt.sign({username,id:userDoc.id},secret,{},async (err,token)=>{
+                if(err) throw err;
+                await User.updateOne({username:{$eq: username}},{token: token});
+                res.cookie('token',token,{ sameSite: 'none', secure: true, httpOnly: true}).json({ 
+                    logged_in:true,
+                },);
+            });
+            
+        } catch(e){
+            res.status(400).json(e);
+        }
     }
-    
 });
 
 app.post('/login',async (req,res)=>{
     const {username,password} = req.body;
-    const userDoc = await User.findOne({username});
-    const passok = bcrypt.compareSync(password,userDoc.password);
-    if(passok){ 
-        const userDoc = await User.findOne({username:{$eq: username}});
-        const token = userDoc.token;
-        res.cookie('token',token,{ sameSite: 'none', secure: true, httpOnly: true}).json({ 
-            id:userDoc._id,
-            username,
-            logged_in:true,
-        },);
-    }
+    if(!username || !password) res.status(400).json("username and password cannot be empty!");
     else{
-        res.status(400).json('wrong credentials');
+        const userDoc = await User.findOne({username});
+        const passok = bcrypt.compareSync(password,userDoc.password);
+        if(passok){ 
+            const userDoc = await User.findOne({username:{$eq: username}});
+            const token = userDoc.token;
+            res.cookie('token',token,{ sameSite: 'none', secure: true, httpOnly: true}).json({ 
+                id:userDoc._id,
+                username,
+                logged_in:true,
+            },);
+        }
+        else{
+            res.status(400).json('wrong credentials');
+        }
     }
 });
 
@@ -206,28 +227,43 @@ app.post('/add_favourites',async(req,res)=>{
     const username = decodeURIComponent(req.query.username);
     const {favourites} = req.body;
     
-    if(token){
-        jwt.verify(token, secret,{},async (err, info)=>{
-            if(err) {
-                res.status(400).json("cannot verify!");
-                throw err;
-            }
-            else{
-                const doc = await User.find({ username: { $eq: username } })
-                .select('-_id favourite');
+    if(!username) res.status(400).json("please give a username!");
+    else if(favourites.length===1 && favourites[0]==='') res.status(400).json("please enter a stock name!");
+    else{
+        var invalid;
+        const existing_stocks = await Stock.find({name: {$in: favourites}});
+        const stock_names = existing_stocks.map(stock => stock.name);
 
-                doc[0].favourite.map((name)=>{
-                    if(!favourites.includes(name)) favourites.push(name);
-                });
-
-                User.updateOne({username: username},
-                {$set : {favourite : favourites}},
-                (err,result)=>{
-                    if(err) res.status(500);
-                    else res.status(200).json("favourites updated");
-                });
+        await favourites.forEach(name => {
+            if(!stock_names.includes(name)){
+                invalid = name;
             }
         });
+        
+        if(invalid) res.status(400).json(`failed to add! ${invalid} is not a stock`);
+        else if(token){
+            jwt.verify(token, secret,{},async (err, info)=>{
+                if(err) {
+                    res.status(400).json("cannot verify!");
+                    throw err;
+                }
+                else{
+                    const doc = await User.find({ username: { $eq: username } })
+                    .select('-_id favourite');
+
+                    doc[0].favourite.map((name)=>{
+                        if(!favourites.includes(name)) favourites.push(name);
+                    });
+
+                    User.updateOne({username: username},
+                    {$set : {favourite : favourites}},
+                    (err,result)=>{
+                        if(err) res.status(500);
+                        else res.status(200).json("favourites updated");
+                    });
+                }
+            });
+        }
     }
 });
 
@@ -237,7 +273,7 @@ app.delete('/delete_favourite',async (req,res)=>{
     const stock_name = decodeURIComponent(req.query.stock);
     const {token} = req.cookies;
    
-    if(token){
+    if(token && username && stock_name){
         const doc = await User.find({username: {$eq : username}})
                 .select('-_id favourite');
         const index = doc[0].favourite.indexOf(stock_name);
@@ -251,6 +287,7 @@ app.delete('/delete_favourite',async (req,res)=>{
                     else res.status(200).json("favourites updated");
                 });
     }
+    else res.status(400).json("invalid request! please enter correct information.");
 })
 
 app.get('/',async (req,res)=>{
@@ -265,6 +302,7 @@ app.get('/',async (req,res)=>{
     }
     else res.status(200).send(index);
 })
+
 
 app.get('/login_page',(req,res)=>{
     res.status(200).send(registered);
@@ -283,19 +321,6 @@ app.get('/refresh',(req,res)=>{
         res.status(200).json("successfully refreshed 50 days data");
     })
 })
-// app.delete('/delete_stock',async (req,res)=>{
-//     // const username = req.query.username;
-//     // const stock_name = req.query.stock;
-//     const date = req.query.date;
-//     const {token} = req.cookies;
-//     console.log(date);
-//     if(token){
-//         Stock.deleteMany({date:{$regex: new RegExp(date, 'i')}},(err)=>{
-//             if(err) res.status(400);
-//             else res.status(200).json("stocks deleted");
-//         })
-//     }
-// });
 
 
 
