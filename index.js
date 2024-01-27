@@ -310,17 +310,17 @@ app.get('/login_page',(req,res)=>{
 
 
 
-app.get('/refresh',(req,res)=>{
-    const args = ['-f'];
-    const child = spawn('node',['fetch_data.js', ...args],{cwd: `${process.cwd()}/script`});
-    child.on('error',(err)=>{
-        console.log(err);
-        res.status(500).json("refresh failed");
-    })
-    child.on('close',()=>{
-        res.status(200).json("successfully refreshed 50 days data");
-    })
-})
+// app.get('/refresh',(req,res)=>{
+//     const args = ['-f'];
+//     const child = spawn('node',['fetch_data.js', ...args],{cwd: `${process.cwd()}/script`});
+//     child.on('error',(err)=>{
+//         console.log(err);
+//         res.status(500).json("refresh failed");
+//     })
+//     child.on('close',()=>{
+//         res.status(200).json("successfully refreshed 50 days data");
+//     })
+// })
 
 
 
