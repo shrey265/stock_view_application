@@ -3,10 +3,11 @@
 An application to access and manage data from the Bombay Stock Exchange (BSE).
 <br><br>
 **Features**
-* Script to fetch data from Bombay Stock Exchange (BSE) and uploading to MongoDB database
+* Script to fetch data from Bombay Stock Exchange (BSE) and upload to MongoDB database
 * Express API with several routes to query data from the database
-* User Login/Register
-* Cache layer 
+* User Login/Register, User favourites
+* Cache layer
+* Refresh route to update data
 
 Server is deployed at https://stock-view-application.vercel.app/
 <br>Or setup the server locally
@@ -45,12 +46,12 @@ Server is deployed at https://stock-view-application.vercel.app/
     "password":123 
     }
 * Add favourite stocks to favourite by a `POST` request on url `https://stock-view-application.vercel.app/add_favourites?username=shrey`
-* Body of the request will contain a list of favourite stocks
+* Body of the request will contain a list of favourite stocks (stock name has to be present in the data, these are just examples)
 {
   "favourites": ["HDFC","MAHINDRA", "ULTRATECH CM", "SBI", "AMERICAN EXPRESS"]
   }
 * Delete a stock from favourites by a `DELETE` request on url `/delete_favourite?username=shrey&stock=HDFC` change the name of the stock in url to delete that stock.
 * `/refresh` to refresh the stock data for last 50 days.
 * This will create a child process which will run the script `node fetch_data.js -f`.
-* Refresh feature is not working at this deployment https://stock-view-application.vercel.app/ because the app is hosted as a serverless function thus creating a child process is a headache.
+* Note: The refresh feature is not working at this deployment https://stock-view-application.vercel.app/ because the app is hosted as a serverless function thus creating a child process is a headache. So I have commented the end point for `/refresh`. To test it just uncomment the code after cloning the repository.
  
